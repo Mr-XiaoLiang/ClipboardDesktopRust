@@ -1,26 +1,51 @@
 use eframe::egui;
 
 fn main() {
+    // 创建默认的原生窗口配置
     let native_options = eframe::NativeOptions::default();
+    // 运行原生窗口
     eframe::run_native(
-        "My egui App",
+        // 设置窗口标题
+        "ClipboardDesktop",
+        // 配置原生窗口参数
         native_options,
-        Box::new(|cc| Ok(Box::new(MyEguiApp::new(cc)))),
+        // 创建App实例
+        Box::new(|cc| Ok(Box::new(ClipboardDesktopApp::new(cc)))),
     );
 }
 
+// 属性宏，自动实现 Default trait
 #[derive(Default)]
-struct MyEguiApp {}
+// 定义空结构体，类似 Java 的 class
+struct ClipboardDesktopApp {}
 
-impl MyEguiApp {
+// 为结构体实现方法，类似 Java 的 class 内部方法
+impl ClipboardDesktopApp {
     fn new(cc: &eframe::CreationContext<'_>) -> Self {
+        // 定义关联函数 new（构造函数替代），返回 Self（自身类型）
+        // cc 参数是 CreationContext 的引用，'_ 表示生命周期参数
+        // 类比 Java：static ClipboardDesktopApp new(CreationContext cc)
+
+        // 调用默认实现创建实例
+        // 类比 Java：return new ClipboardDesktopApp();
         Self::default()
     }
 }
 
-impl eframe::App for MyEguiApp {
+// 实现 App trait（类似 Java 接口）
+// 类比 Java：class ClipboardDesktopApp implements App
+impl eframe::App for ClipboardDesktopApp {
     fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
+
+        // 实现 update 方法，&mut self 相当于 Java 的 this，可变借用
+        // ctx 和 frame 是引用参数
+        // 类比 Java：void update(Context ctx, Frame frame)
+
         egui::CentralPanel::default().show(ctx, |ui| {
+
+            // 调用 CentralPanel 的 show 方法，第二个参数是闭包
+            // 类比 Java：centralPanel.show(ctx, (ui) -> { ... })
+
             ui.heading("Hello World!");
         });
     }
