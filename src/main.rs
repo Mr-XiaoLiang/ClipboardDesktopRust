@@ -22,7 +22,9 @@ fn main() {
 // 属性宏，自动实现 Default trait
 #[derive(Default)]
 // 定义空结构体，类似 Java 的 class
-pub struct ClipboardDesktopApp {}
+pub struct ClipboardDesktopApp {
+    items: Vec<String>,
+}
 
 // 为结构体实现方法，类似 Java 的 class 内部方法
 impl ClipboardDesktopApp {
