@@ -19,5 +19,6 @@ pub fn app_content(app: &mut ClipboardDesktopApp, ctx: &egui::Context, frame: &m
     }
 
     ui.heading("Hello World!");
+    ui.heading("中文内容");
 
 }

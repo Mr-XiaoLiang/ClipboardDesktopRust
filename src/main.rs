@@ -1,7 +1,8 @@
 mod content;
 
-use eframe::egui;
 use content::*;
+use eframe::egui;
+use std::sync::Arc;
 
 fn main() {
     // 创建默认的原生窗口配置
@@ -36,6 +37,25 @@ impl ClipboardDesktopApp {
         // 调用默认实现创建实例
         // 类比 Java：return new ClipboardDesktopApp();
         Self::default()
+    }
+
+    fn load_fonts(ctx: &egui::Context) {
+        let mut fonts = egui::FontDefinitions::default();
+        fonts.font_data.insert(
+            "my_font".to_owned(),
+            Arc::from(egui::FontData::from_static(include_bytes!("xxxxx.ttf"))),
+        );
+        fonts
+            .families
+            .get_mut(&egui::FontFamily::Proportional)
+            .unwrap()
+            .insert(0, "my_font".to_owned());
+        fonts
+            .families
+            .get_mut(&egui::FontFamily::Monospace)
+            .unwrap()
+            .push("my_font".to_owned());
+        ctx.set_fonts(fonts);
     }
 }
 
