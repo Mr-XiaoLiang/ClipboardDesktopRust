@@ -36,6 +36,7 @@ impl ClipboardDesktopApp {
 
         // 调用默认实现创建实例
         // 类比 Java：return new ClipboardDesktopApp();
+        Self::load_fonts(&cc.egui_ctx);
         Self::default()
     }
 
@@ -43,7 +44,7 @@ impl ClipboardDesktopApp {
         let mut fonts = egui::FontDefinitions::default();
         fonts.font_data.insert(
             "my_font".to_owned(),
-            Arc::from(egui::FontData::from_static(include_bytes!("xxxxx.ttf"))),
+            Arc::from(egui::FontData::from_static(include_bytes!("font/NotoSansSC-VariableFont_wght.ttf"))),
         );
         fonts
             .families
