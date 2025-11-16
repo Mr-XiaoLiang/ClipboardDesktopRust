@@ -1,17 +1,24 @@
 mod content;
 
 use content::*;
-use eframe::egui;
+use eframe::egui::{self, IconData};
 use std::sync::Arc;
+use image;
 
 fn main() {
     // 创建默认的原生窗口配置
     let mut native_options = eframe::NativeOptions::default();
     native_options.centered = true;
+    let icon_data = include_bytes!("icon/app_icon_mini.png");
+    let img = image::load_from_memory_with_format(icon_data, image::ImageFormat::Png).unwrap();
+    let rgba_data = img.into_rgba8();
+    let (w,h)=(rgba_data.width(),rgba_data.height());
+    let raw_data: Vec<u8> = rgba_data.into_raw();
+    native_options.viewport.icon=Some(Arc::<IconData>::new(IconData { rgba:  raw_data, width: w, height: h }));
     // 运行原生窗口
     eframe::run_native(
         // 设置窗口标题
-        "ClipboardDesktop",
+        "Clipboard",
         // 配置原生窗口参数
         native_options,
         // 创建App实例
@@ -37,6 +44,7 @@ impl ClipboardDesktopApp {
         // 调用默认实现创建实例
         // 类比 Java：return new ClipboardDesktopApp();
         Self::load_fonts(&cc.egui_ctx);
+        egui_extras::install_image_loaders(&cc.egui_ctx);
         Self::default()
     }
 

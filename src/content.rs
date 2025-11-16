@@ -1,5 +1,6 @@
 
 use eframe::egui;
+use eframe::egui::include_image;
 use crate::ClipboardDesktopApp;
 
 pub fn app_content(app: &mut ClipboardDesktopApp, ctx: &egui::Context, frame: &mut eframe::Frame, ui: &mut egui::Ui) {
@@ -9,6 +10,9 @@ pub fn app_content(app: &mut ClipboardDesktopApp, ctx: &egui::Context, frame: &m
             ctx.set_visuals(egui::Visuals::dark());
         }
         if ui.button("Light").clicked(){
+            ctx.set_visuals(egui::Visuals::light());
+        }
+        if ui.button(include_image!("icon/app_icon_mini.png")).clicked(){
             ctx.set_visuals(egui::Visuals::light());
         }
     });
