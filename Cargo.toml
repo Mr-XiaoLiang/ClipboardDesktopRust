@@ -9,6 +9,7 @@ edition = "2024"
 #egui_extras = { version = "0.33.2", features = ["all_loaders"] }
 #winit = "0.30.12"
 slint = "1.14.1"
+anyhow = "1.0.100"
 
 [build-dependencies]
 slint-build = "1.14.1"

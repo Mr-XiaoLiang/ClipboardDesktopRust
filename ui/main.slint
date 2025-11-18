@@ -1,32 +1,38 @@
-import {GroupBox, LineEdit, Button} from "std-widgets.slint";
+import { GroupBox, LineEdit, Button } from "std-widgets.slint";
 
-export component MainWindow inherits Window {
-    title: "Main Window";
-    width: 600px;
-    height: 500px;
+import { VerticalBox , HorizontalBox, Button} from "std-widgets.slint";
+//import { BorderlessWindow } from "widget/borderless-window.slint";
+import { Content } from "content.slint";
 
-    VerticalLayout {
-        alignment:start;
-        padding-left: 25px;
-        padding-right: 25px;
+export component Main inherits Window {
+    title: " 你好，Slint！";
+    preferred-width: 480px;
+    preferred-height: 320px;
+//    border-width: 4px;
 
-        Text {
-            font-size: 27px;
-            font-weight: 700;
-            color: #6776FF;
-         }
+    callback close-window();
+    callback minimized-window(bool);
+    callback maximized-window(bool);
+    callback move-window(length, length);
+    callback mouse-down(int, int);
+    callback mouse-move(int, int);
 
-        GroupBox{
-            title:"lineEdit";
-            LineEdit {
-                placeholder-text: "enter text";
-            }
-        }
+//    on-close-window() => {
+//        close-window();
+//    }
+//
+//    on-minimized-window(enable) => {
+//        minimized-window(enable);
+//    }
+//
+//    on-maximized-window(enable) => {
+//        maximized-window(enable);
+//    }
+//
+//    on-move-window(offset-x, offset-y) => {
+//        move-window(offset-x, offset-y);
+//    }
 
-        Button {
-            text: "Click Me";
-            clicked => { self.text = "Clicked 中文"; }
-        }
 
-    }
+    Content {}
 }

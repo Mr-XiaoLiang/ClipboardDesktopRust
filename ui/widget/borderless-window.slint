@@ -1,0 +1,260 @@
+export component BorderlessWindow inherits Window{
+    no-frame: true;
+    min-width: 200px;
+    min-height: 200px;
+
+    in property <brush> title-background: transparent;
+    in property <brush> content-background: #fdfdfd;
+    in property <brush> title-text-color: white;
+    in property <string> parent;
+    in property <length> border-width: 4px;
+    in property <brush> border-color: #454158;
+
+    property <bool> drag-area-pressed: false;
+    property <length> drag-area-down-x: 0;
+    property <length> drag-area-down-y: 0;
+
+    property <bool> is-maximized: false;
+
+    callback on-close-window();
+    callback on-move-window(length, length);
+    callback on-minimized-window(bool);
+    callback on-maximized-window(bool);
+
+    function resize-window(width: length, height: length) {
+        if(width < root.min-width){
+            root.width = root.min-width;
+        }else{
+            root.width = width;
+        }
+        if(height < root.min-height){
+            root.height = root.min-height;
+        }else{
+            root.height = height;
+        }
+    }
+
+    function process-drag-event(idx: int, ev: PointerEvent, x: length, y: length) {
+        if(ev.kind == PointerEventKind.down){
+            drag-area-down-x = x;
+            drag-area-down-y = y;
+            drag-area-pressed = true;
+        }
+        if(ev.kind == PointerEventKind.move){
+            if(!drag-area-pressed){
+                return;
+            }
+            //拖动窗口
+            if (idx == 0){
+                on-move-window(x - drag-area-down-x, y - drag-area-down-y);
+            }else if (idx == 1){
+                //上边框
+                on-move-window(0, y - drag-area-down-y);
+                resize-window(root.width, root.height - (y - drag-area-down-y));
+            }else if (idx == 2){
+                //右边框
+                resize-window(root.width + (x - drag-area-down-x), root.height);
+            }else if (idx == 3){
+                //下边框
+                resize-window(root.width, root.height + (y - drag-area-down-y));
+            }else if (idx == 4){
+                //左边框
+                on-move-window(x - drag-area-down-x, 0);
+                resize-window(root.width - (x - drag-area-down-x), root.height);
+            }else if (idx == 5){
+                //左上角
+                on-move-window(x - drag-area-down-x, y - drag-area-down-y);
+                resize-window(root.width - (x - drag-area-down-x), root.height - (y - drag-area-down-y));
+            }else if (idx == 6){
+                //右上角
+                on-move-window(0, y - drag-area-down-y);
+                resize-window(root.width + (x - drag-area-down-x), root.height - (y - drag-area-down-y));
+            }else if (idx == 7){
+                //右下角
+                resize-window(root.width + (x - drag-area-down-x), root.height + (y - drag-area-down-y));
+            }else if (idx == 8){
+                //左下角
+                on-move-window(x - drag-area-down-x, 0);
+                resize-window(root.width - (x - drag-area-down-x), root.height + (y - drag-area-down-y));
+            }
+        }
+        if(ev.kind == PointerEventKind.up || ev.kind == PointerEventKind.up){
+            drag-area-pressed = false;
+        }
+    }
+
+    // 上边框点击区域
+    top-border-touch:= TouchArea{
+        mouse-cursor: row-resize;
+        width: 100%;
+        height: root.border-width;
+        x: 0;
+        y: 0;
+        pointer-event(ev) => {
+            process-drag-event(1, ev, self.mouse-x, self.mouse-y);
+        }
+    }
+
+    // 右边框点击区域
+    right-border-touch:= TouchArea{
+        mouse-cursor: col-resize;
+        width: root.border-width;
+        height: 100%;
+        x: root.width - root.border-width;
+        y: 0;
+        pointer-event(ev) => {
+            process-drag-event(2, ev, self.mouse-x, self.mouse-y);
+        }
+    }
+
+    // 下边框点击区域
+    bottom-border-touch:= TouchArea{
+        mouse-cursor: row-resize;
+        width: 100%;
+        height: root.border-width;
+        x: 0;
+        y: root.height - root.border-width;
+        pointer-event(ev) => {
+            process-drag-event(3, ev, self.mouse-x, self.mouse-y);
+        }
+    }
+
+    // 左边框点击区域
+    left-border-touch:= TouchArea{
+        mouse-cursor: col-resize;
+        width: root.border-width;
+        height: 100%;
+        x: 0;
+        y: 0;
+        pointer-event(ev) => {
+            process-drag-event(4, ev, self.mouse-x, self.mouse-y);
+        }
+    }
+
+    // 左上角点击区域
+    left-top-border-touch:= TouchArea{
+        mouse-cursor: nw-resize;
+        width: root.border-width;
+        height: root.border-width;
+        x: 0;
+        y: 0;
+        pointer-event(ev) => {
+            process-drag-event(5, ev, self.mouse-x, self.mouse-y);
+        }
+    }
+    // 右上角点击区域
+    right-top-border-touch:= TouchArea{
+        mouse-cursor: sw-resize;
+        width: root.border-width;
+        height: root.border-width;
+        x: root.width - root.border-width;
+        y: 0;
+        pointer-event(ev) => {
+            process-drag-event(6, ev, self.mouse-x, self.mouse-y);
+        }
+    }
+    //右下角点击区域
+    right-bottom-border-touch:= TouchArea{
+        mouse-cursor: nw-resize;
+        width: root.border-width;
+        height: root.border-width;
+        x: root.width - root.border-width;
+        y: root.height - root.border-width;
+        pointer-event(ev) => {
+            process-drag-event(7, ev, self.mouse-x, self.mouse-y);
+        }
+    }
+    //左下角点击区域
+    left-bottom-border-touch:= TouchArea{
+        mouse-cursor: sw-resize;
+        width: root.border-width;
+        height: root.border-width;
+        x: 0;
+        y: root.height - root.border-width;
+        pointer-event(ev) => {
+            process-drag-event(8, ev, self.mouse-x, self.mouse-y);
+        }
+    }
+
+    VerticalLayout {
+        padding: root.border-width;
+        //标题栏
+        Rectangle {
+            height: 28px;
+            background: title-background;
+            HorizontalLayout {
+                padding-right: 7px;
+                padding-left: 7px;
+                //标题
+                Text {
+                    text: root.title;
+                    color: title-text-color;
+                    vertical-alignment: center;
+                    TouchArea {
+                        pointer-event(ev) => {
+                            process-drag-event(0, ev, self.mouse-x, self.mouse-y);
+                        }
+                    }
+                }
+                //最小化按钮
+                Rectangle {
+                    Rectangle {
+                        y: 7px;
+                        border-radius: 3px;
+                        width: 14px;
+                        height: 14px;
+                        background: root.border-color;
+                        touch-minize := TouchArea {
+                            clicked => { on-minimized-window(true) }
+                        }
+                        Text {
+                            color: touch-minize.has-hover? touch-minize.pressed? gray: title-text-color : lightgray;
+                            text: "-";
+                        }
+                    }
+                    width: 20px;
+                }
+                //最大化按钮
+                Rectangle {
+                    Rectangle {
+                        y: 7px;
+                        border-radius: 3px;
+                        width: 14px;
+                        height: 14px;
+                        background: root.border-color;
+                        touch-maximized := TouchArea {
+                            clicked => {
+                                is-maximized = !is-maximized;
+                                on-maximized-window(is-maximized);
+                            }
+                        }
+                        Text {
+                            color: touch-maximized.has-hover? touch-maximized.pressed? gray: title-text-color : lightgray;
+                            text: is-maximized?"❐":"□";
+                        }
+                    }
+                    width: 20px;
+                }
+                //关闭按钮
+                Rectangle {
+                    y: 7px;
+                    border-radius: 3px;
+                    width: 14px;
+                    height: 14px;
+                    background: root.border-color;
+                    touch-close := TouchArea {
+                        clicked => { on-close-window() }
+                    }
+                    Text {
+                        color: touch-close.has-hover? touch-close.pressed? gray: title-text-color : lightgray;
+                        text: "×";
+                    }
+                }
+            }
+        }
+        Rectangle {
+            background: content-background;
+            @children
+        }
+    }
+}
