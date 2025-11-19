@@ -1,7 +1,26 @@
+# 添加以下配置（关键）
+[package.metadata.windows]
+subsystem = "windows"  # 切换为 GUI 子系统，不弹出终端
+
+# 打包配置（关键）
+[package.metadata.bundle]
+name = "Clipboard"          # 应用名称（显示在启动台）
+identifier = "com.lollipoppp.app"# 唯一标识（如 com.xxx.yourapp）
+icon = "ui/icon/icon.icns"      # 应用图标（可选，需准备 .icns 文件）
+
+# macOS 特定配置（指定为 GUI 应用）
+[package.metadata.bundle.osx]
+category = "public.app-category.utilities"  # 应用分类（如工具类）
+minimum_system_version = "10.15"            # 最低支持 macOS 版本
+
 [package]
 name = "ClipboardDesktopRust"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2024"
+authors = ["Lollipop<lollipop8555@outlook.com>"]  # 新增这一行（必填）
+description = "A Rust GUI Clipboard"  # 可选：补充描述（部分工具可能依赖）
+license = "MIT"  # 可选：补充许可证（如 MIT、Apache-2.0，避免后续警告）
+
 
 [dependencies]
 #eframe = "0.33.0"
@@ -10,6 +29,9 @@ edition = "2024"
 #winit = "0.30.12"
 slint = "1.14.1"
 anyhow = "1.0.100"
+tao = "0.22.3"
+tray-icon = "0.9.0"
+image = "0.24.9"
 
 [build-dependencies]
 slint-build = "1.14.1"

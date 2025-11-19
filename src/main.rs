@@ -1,33 +1,47 @@
+mod tray_icon;
+
+use std::process::Command;
+use std::error::Error;
 use anyhow::Result;
-use slint::LogicalPosition;
+
+pub const ARGS_APP:&str = "app";
 
 slint::include_modules!();
 
-fn main() -> Result<()> {
-    let main = Main::new()?;
+fn main() -> Result<(), Box<dyn Error>> {
 
-    let handel = main.as_weak();
-    main.on_close_window(move ||{
-        handel.upgrade().unwrap().hide().unwrap();
-    });
-    //最小化
-    let handel = main.as_weak();
-    main.on_minimized_window(move |enable|{
-        handel.upgrade().unwrap().window().set_minimized(enable);
-    });
-    //最大化
-    let handel = main.as_weak();
-    main.on_maximized_window(move |enable|{
-        handel.upgrade().unwrap().window().set_maximized(enable);
-    });
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() > 1{
+        let arg1 = args[1].to_lowercase();
+        if arg1.starts_with(ARGS_APP) {
+            //打开App
+            let main = MainWindow::new()?;
+            // let handel = main.as_weak();
+            main.run()?;
+            return Ok(());
+        }
+    }
 
-    let handel = main.as_weak();
-    main.on_move_window(move |offset_x, offset_y|{
-        let main = handel.upgrade().unwrap();
-        let logical_pos = main.window().position().to_logical(main.window().scale_factor());
-        main.window().set_position(LogicalPosition::new(logical_pos.x + offset_x, logical_pos.y + offset_y));
-    });
+    //打开app
+    open_app();
 
-    main.run()?;
+    //打开图标
+    tray_icon::main().expect("tray_icon.ERROR");
+
+    Ok(())
+}
+
+pub fn open_app(){
+    let _ = start_process(vec![ARGS_APP.to_string()]);
+}
+
+fn start_process(command_args: Vec<String>) -> Result<()>{
+    // 获取当前可执行文件的路径
+    let current_exe = std::env::current_exe()?;
+
+    // 启动新进程并传递命令行参数
+    Command::new(current_exe)
+        .args(&command_args)
+        .spawn()?;
     Ok(())
 }

@@ -4,35 +4,14 @@ import { VerticalBox , HorizontalBox, Button} from "std-widgets.slint";
 //import { BorderlessWindow } from "widget/borderless-window.slint";
 import { Content } from "content.slint";
 
-export component Main inherits Window {
-    title: " 你好，Slint！";
+export component MainWindow inherits Window {
+    title: "Clipboard";
     preferred-width: 480px;
     preferred-height: 320px;
-//    border-width: 4px;
 
-    callback close-window();
-    callback minimized-window(bool);
-    callback maximized-window(bool);
-    callback move-window(length, length);
-    callback mouse-down(int, int);
-    callback mouse-move(int, int);
+    in property <image> window_icon: @image-url("./icon/icon.png");
 
-//    on-close-window() => {
-//        close-window();
-//    }
-//
-//    on-minimized-window(enable) => {
-//        minimized-window(enable);
-//    }
-//
-//    on-maximized-window(enable) => {
-//        maximized-window(enable);
-//    }
-//
-//    on-move-window(offset-x, offset-y) => {
-//        move-window(offset-x, offset-y);
-//    }
-
+    icon: window_icon;
 
     Content {}
 }
