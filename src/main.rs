@@ -1,6 +1,6 @@
 mod tray_icon;
 
-use std::process::Command;
+use hide_console::hide_console;
 use std::error::Error;
 use anyhow::Result;
 
@@ -9,39 +9,49 @@ pub const ARGS_APP:&str = "app";
 slint::include_modules!();
 
 fn main() -> Result<(), Box<dyn Error>> {
+    #![windows_subsystem = "windows"]
 
-    let args: Vec<String> = std::env::args().collect();
-    if args.len() > 1{
-        let arg1 = args[1].to_lowercase();
-        if arg1.starts_with(ARGS_APP) {
-            //打开App
-            let main = MainWindow::new()?;
-            // let handel = main.as_weak();
-            main.run()?;
-            return Ok(());
-        }
-    }
+    // hide_console();
 
-    //打开app
-    open_app();
+    //打开App
+    let main = MainWindow::new().expect("Failed to create main window");
+    let handel = main.as_weak();
+    // handel.on_close_requested(move || {
+    //     println!("Window close requested, hiding instead.");
+    //     // 当用户点击关闭时，隐藏窗口
+    //     if let Some(window) = handel.upgrade() {
+    //         window.hide();
+    //     }
+    //     true // 返回 true 告诉 Slint 我们处理了这个事件
+    // });
 
+    let handel_clone = handel.clone();
     //打开图标
-    tray_icon::main().expect("tray_icon.ERROR");
+    // tray_icon::main(|| {
+        // if let Some(window) = handel_clone.upgrade() {
+        //     if window.is_visible() {
+        //
+        //     } else {
+        //         window.show();
+        //     }
+        //     window.raise(); // 把窗口提到最前面
+        // }
+    // }).expect("tray_icon.ERROR");
 
-    Ok(())
-}
+    tray_icon::main(move|| {
+        // if let Some(window) = handel_clone.upgrade() {
+        //     if window.is_visible() {
+        //     } else {
+        //         window.show();
+        //     }
+        //     window.raise(); // 把窗口提到最前面
+        // }
+    }).expect("tray_icon.ERROR");
 
-pub fn open_app(){
-    let _ = start_process(vec![ARGS_APP.to_string()]);
-}
+    main.show();
 
-fn start_process(command_args: Vec<String>) -> Result<()>{
-    // 获取当前可执行文件的路径
-    let current_exe = std::env::current_exe()?;
+    // 启动 Slint 的事件循环
+    slint::run_event_loop().expect("Failed to run event loop");
 
-    // 启动新进程并传递命令行参数
-    Command::new(current_exe)
-        .args(&command_args)
-        .spawn()?;
     Ok(())
 }

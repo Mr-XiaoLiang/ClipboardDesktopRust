@@ -13,6 +13,12 @@ icon = "ui/icon/icon.icns"      # 应用图标（可选，需准备 .icns 文件
 category = "public.app-category.utilities"  # 应用分类（如工具类）
 minimum_system_version = "10.15"            # 最低支持 macOS 版本
 
+[package.metadata.bundle.windows]
+icon = "ui/icon/icon.ico"
+
+[package.metadata.bundle.linux]
+icon = "ui/icon/icon.png"
+
 [package]
 name = "ClipboardDesktopRust"
 version = "1.0.0"
@@ -23,15 +29,16 @@ license = "MIT"  # 可选：补充许可证（如 MIT、Apache-2.0，避免后�
 
 
 [dependencies]
-#eframe = "0.33.0"
-#image = "0.25.9"
-#egui_extras = { version = "0.33.2", features = ["all_loaders"] }
 #winit = "0.30.12"
 slint = "1.14.1"
 anyhow = "1.0.100"
 tao = "0.22.3"
 tray-icon = "0.9.0"
-image = "0.24.9"
+image = "0.25.9"
+hide_console = "0.1.1"
+# 为了方便地在不同平台上运行命令（例如在macOS上打开应用目录），可以加这个
+# 在我们这个场景不是必须的，但很常用
+# which = "4.4"
 
 [build-dependencies]
 slint-build = "1.14.1"

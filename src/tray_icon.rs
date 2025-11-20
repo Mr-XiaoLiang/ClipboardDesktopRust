@@ -5,11 +5,32 @@ use tray_icon::{menu::{Menu, MenuItem, MenuEvent}, TrayIconBuilder, Icon, TrayIc
 use anyhow::Result;
 use image;
 
-use crate::open_app;
-
 const ICON: &[u8] = include_bytes!("./icon/tray_icon.png");
 
-pub fn main() -> Result<()>{
+// pub fn icon_only(show_window: fn() -> ()) -> Result<()> {
+//     let icon = load_icon()?;
+//     let show_item = MenuItem::new("打开", true, None);
+//     let quit_item = PredefinedMenuItem::quit(None);
+//
+//     let mut menu = Menu::new();
+//     menu.append(&show_item).unwrap();
+//     menu.append(&quit_item).unwrap();
+//
+//     let show_item_clone = show_item.clone();
+//     let _tray_icon = Some(
+//         TrayIconBuilder::new()
+//             .with_menu(Box::new(menu))
+//             .with_tooltip("Clipboard")
+//             .with_icon(icon)
+//             .build()?,
+//     );
+//     Ok(())
+// }
+
+pub fn main<F>(show_window: F) -> Result<()>
+where 
+    F: Fn() -> () + 'static,
+{
     let icon = load_icon()?;
 
     let event_loop = EventLoopBuilder::new().build();
@@ -43,7 +64,7 @@ pub fn main() -> Result<()>{
         if let Ok(MenuEvent { id }) = menu_channel.try_recv() {
             if id.0 == "1001"{
                 //点击“打开”菜单，启动主窗口进程
-                open_app();
+                show_window();
             }else{
                 //退出托盘程序
                 *control_flow = ControlFlow::Exit;
@@ -53,7 +74,7 @@ pub fn main() -> Result<()>{
         if let Ok(TrayIconEvent {click_type, id: _, x: _, y: _, icon_rect: _ }) = tray_channel.try_recv(){
             if let ClickType::Left = click_type{
                 //打开主窗口进程
-                open_app();
+                show_window();
             }
         }
     });
