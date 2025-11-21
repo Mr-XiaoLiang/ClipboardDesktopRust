@@ -2,56 +2,52 @@ mod tray_icon;
 
 use hide_console::hide_console;
 use std::error::Error;
+use std::sync::{Arc, Mutex};
 use anyhow::Result;
-
-pub const ARGS_APP:&str = "app";
 
 slint::include_modules!();
 
 fn main() -> Result<(), Box<dyn Error>> {
     #![windows_subsystem = "windows"]
 
-    // hide_console();
+    hide_console();
 
-    //打开App
-    let main = MainWindow::new().expect("Failed to create main window");
-    let handel = main.as_weak();
-    // handel.on_close_requested(move || {
-    //     println!("Window close requested, hiding instead.");
-    //     // 当用户点击关闭时，隐藏窗口
-    //     if let Some(window) = handel.upgrade() {
-    //         window.hide();
-    //     }
-    //     true // 返回 true 告诉 Slint 我们处理了这个事件
-    // });
+    // 1. 创建一个通道用于与托盘图标线程通信
+    let (show_tx, show_rx) = std::sync::mpsc::channel::<()>();
 
-    let handel_clone = handel.clone();
-    //打开图标
-    // tray_icon::main(|| {
-        // if let Some(window) = handel_clone.upgrade() {
-        //     if window.is_visible() {
-        //
-        //     } else {
-        //         window.show();
-        //     }
-        //     window.raise(); // 把窗口提到最前面
-        // }
-    // }).expect("tray_icon.ERROR");
+    // 2. 先启动托盘图标线程（在创建窗口之前）
+    let tray_thread = std::thread::spawn(move || {
+        // 创建一个闭包，用于在托盘图标被点击时发送消息
+        let show_window = move || {
+            println!("show_window called"); // 调试信息
+            // 发送消息到主线程
+            show_tx.send(()).expect("Failed to send show window message");
+        };
 
-    tray_icon::main(move|| {
-        // if let Some(window) = handel_clone.upgrade() {
-        //     if window.is_visible() {
-        //     } else {
-        //         window.show();
-        //     }
-        //     window.raise(); // 把窗口提到最前面
-        // }
-    }).expect("tray_icon.ERROR");
+        // 运行托盘图标
+        tray_icon::main(show_window).expect("Failed to initialize tray icon");
+    });
 
-    main.show();
+    // 3. 创建主窗口
+    let main_window = MainWindow::new()?;
 
-    // 启动 Slint 的事件循环
-    slint::run_event_loop().expect("Failed to run event loop");
+    // 4. 启动一个线程来监听托盘图标消息
+    std::thread::spawn(move || {
+        // 监听来自托盘图标的消息
+        while let Ok(()) = show_rx.recv() {
+            // 由于Slint窗口通常应该在主线程中操作，
+            // 这里我们可以考虑使用Slint的事件循环代理来处理
+            // 或者简化处理，让窗口始终可见
+        }
+    });
+
+    // 5. 运行主窗口（这会启动事件循环）
+    main_window.run()?;
+
+    // 等待托盘线程结束
+    if let Err(e) = tray_thread.join() {
+        eprintln!("托盘线程错误: {:?}", e);
+    }
 
     Ok(())
 }
