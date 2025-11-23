@@ -1,9 +1,8 @@
 mod tray_icon;
 
+use anyhow::Result;
 use hide_console::hide_console;
 use std::error::Error;
-use std::sync::{Arc, Mutex};
-use anyhow::Result;
 
 slint::include_modules!();
 
@@ -21,7 +20,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         let show_window = move || {
             println!("show_window called"); // 调试信息
             // 发送消息到主线程
-            show_tx.send(()).expect("Failed to send show window message");
+            show_tx
+                .send(())
+                .expect("Failed to send show window message");
         };
 
         // 运行托盘图标

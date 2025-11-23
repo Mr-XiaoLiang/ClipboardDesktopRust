@@ -1,7 +1,6 @@
 import { GroupBox, LineEdit, Button } from "std-widgets.slint";
 
 import { VerticalBox, HorizontalBox, Button } from "std-widgets.slint";
-//import { BorderlessWindow } from "widget/borderless-window.slint";
 import { Content } from "content.slint";
 
 export component MainWindow inherits Window {
@@ -11,14 +10,9 @@ export component MainWindow inherits Window {
 
     in property <image> window_icon: @image-url("./icon/icon.png");
     icon: window_icon;
-
-    // 当窗口关闭按钮被点击时，Slint会调用这个回调
-    // 返回 true 表示我们自己处理了关闭逻辑，Slint不应继续关闭窗口
-    // 返回 false 表示让Slint执行默认操作（关闭窗口）
-//    on close-requested => {
-//        root.on-close-requested();
-//        return true; // 阻止窗口被销毁
-//    }
+    
+    // 定义回调接口
+    callback on-close-requested;
 
     Content { }
 }
