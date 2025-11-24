@@ -1,15 +1,13 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
 mod tray_icon;
 
 use anyhow::Result;
-use hide_console::hide_console;
 use std::error::Error;
 
 slint::include_modules!();
 
 fn main() -> Result<(), Box<dyn Error>> {
-    #![windows_subsystem = "windows"]
-
-    hide_console();
 
     // 1. 创建一个通道用于与托盘图标线程通信
     let (show_tx, show_rx) = std::sync::mpsc::channel::<()>();
